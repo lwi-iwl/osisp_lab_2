@@ -11,10 +11,6 @@
 
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-HWND hNumOfRows;
-HWND hNumOfColumns;
-HWND hFontSize;
-HDC winDC;
 RECT rect;
 PAINTSTRUCT ps;
 bool isFirstPaint = true;
@@ -25,8 +21,6 @@ std::string line;
 std::wstring circleline;
 std::list<std::wstring> strings = {};
 std::list<std::wstring> circlestrings = {};
-LPTEXTMETRIC lptm;
-RECT tablerect;
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPTSTR, int nCmdShow)
 {
@@ -67,11 +61,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
     case WM_CREATE:
     {
-        hNumOfRows = CreateWindowEx(NULL, L"Edit", NULL, WS_CHILD | WS_VISIBLE | WS_BORDER | ES_MULTILINE | ES_AUTOVSCROLL | ES_NUMBER,
+        HWND hNumOfRows = CreateWindowEx(NULL, L"Edit", NULL, WS_CHILD | WS_VISIBLE | WS_BORDER | ES_MULTILINE | ES_AUTOVSCROLL | ES_NUMBER,
             10, 20, 50, 20, hWnd, (HMENU)1, (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE), NULL);
-        hNumOfColumns = CreateWindowEx(NULL, L"Edit", NULL, WS_CHILD | WS_VISIBLE | WS_BORDER | ES_MULTILINE | ES_AUTOVSCROLL | ES_NUMBER,
+        HWND hNumOfColumns = CreateWindowEx(NULL, L"Edit", NULL, WS_CHILD | WS_VISIBLE | WS_BORDER | ES_MULTILINE | ES_AUTOVSCROLL | ES_NUMBER,
             70, 20, 50, 20, hWnd, (HMENU)2, (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE), NULL);
-        hFontSize = CreateWindowEx(NULL, L"Edit", NULL, WS_CHILD | WS_VISIBLE | WS_BORDER | ES_MULTILINE | ES_AUTOVSCROLL | ES_NUMBER,
+        HWND hFontSize = CreateWindowEx(NULL, L"Edit", NULL, WS_CHILD | WS_VISIBLE | WS_BORDER | ES_MULTILINE | ES_AUTOVSCROLL | ES_NUMBER,
             130, 20, 50, 20, hWnd, (HMENU)3, (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE), NULL);
 
         SendMessage(hNumOfRows, EM_SETLIMITTEXT, 2, 0);
@@ -84,7 +78,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
     {
         GetClientRect(hWnd, &rect);
         rect.top = 42;
-        winDC = BeginPaint(hWnd, &ps);
+        HDC winDC = BeginPaint(hWnd, &ps);
         if (isFirstPaint)
         {
             std::ifstream in("C:\\Docs\\OS\\2\\vs\\WindowsProject1\\Debug\\1.txt");
@@ -120,7 +114,6 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         int oldheight = rect.top;
         if (rows != 0)
         {
-            GetTextMetrics(winDC, lptm);
             int counter = 0;
             int rowscounter = 1;
             int columnscounter = 1;
@@ -143,7 +136,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                         height = 0;
                         rowscounter++;
                     }
-
+                    RECT tablerect;
                     tablerect.top = oldheight;
                     tablerect.left = counter * rect.right / columns + 5;
                     tablerect.right = (counter + 1) * rect.right / columns - 5;
